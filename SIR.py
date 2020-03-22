@@ -15,8 +15,8 @@ if __name__ == "__main__":
     I0 = 0.001
     R0 = 0
 
-    beta = 0.5
-    gamma = 0.09
+    beta = 0.001
+    gamma = 0.2587
 
     t = np.linspace(0,200,1000)
 

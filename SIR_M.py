@@ -17,9 +17,9 @@ if __name__ == "__main__":
     R0 = 0
     M0 = 0
 
-    beta = 0.5
-    gamma = 0.09
-    mort = 0.02
+    beta = 0.01
+    gamma = 0.2587
+    mort = 0.029925
 
     t = np.linspace(0,200,1000)
 
