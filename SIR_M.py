@@ -27,7 +27,7 @@ if __name__ == "__main__":
     solution = np.array(solution)
 
     plt.figure(figsize = [10,6])
-    plt.plot(t, solution[:,0], label = "S(t)")
+    # plt.plot(t, solution[:,0], label = "S(t)")
     plt.plot(t, solution[:,1], label = "I(t)")
     plt.plot(t, solution[:,2], label = "R(t)")
     plt.plot(t, solution[:,3], label = "M(t)")

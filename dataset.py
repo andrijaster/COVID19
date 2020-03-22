@@ -36,3 +36,25 @@ gamma = data_recovered.sum(axis=1)/data_infected.sum(axis=1)
 
 gamma_tot = data_recovered.sum(axis=1).sum()/data_infected.sum(axis=1).sum()
 gamma_tot_2 = gamma.mean()
+
+# pop_serbia = 6982604
+# pop_italy = 10078012
+
+pop = 10078012
+
+country = 'Italy'
+
+
+lista = [('Infected',country),('Recovered',country),('Death',country)]
+df = data.loc[:,lista]
+df['S'] = df.loc[:,lista[0]]
+
+df.iloc[0,3] = pop
+
+for i in range(1,df.shape[0]):
+    df.iloc[i,3] = df.iloc[i-1,3] - df.iloc[i,0]
+    
+df = df[df.iloc[:,0]>0]
+df_t = df/pop
+
+
