@@ -44,7 +44,7 @@ gamma_tot_2 = gamma.mean()
 
 pop = 10078012
 
-country = 'China'
+country = 'Serbia'
 
 
 lista = [('Infected',country),('Recovered',country),('Death',country)]
