@@ -18,7 +18,7 @@ if __name__ == "__main__":
     beta = 0.001
     gamma = 0.2587
 
-    t = np.linspace(0,200,1000)
+    t = np.linspace(0,200,1001)
 
     solution = spint.odeint(SIR_model, [S0, I0, R0], t, args= (beta, gamma))
     solution = np.array(solution)

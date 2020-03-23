@@ -5,16 +5,17 @@ data_infected = pd.read_csv("data/time_series_19-covid-Confirmed.csv")
 data_recovered = pd.read_csv("data/time_series_19-covid-Recovered.csv")
 data_death = pd.read_csv("data/time_series_19-covid-Deaths.csv")
 
-data_infected = data_infected.iloc[:,1:].T
-data_recovered = data_recovered.iloc[:,1:].T
-data_death = data_death.iloc[:,1:].T
+data_infected = data_infected.T
+data_recovered = data_recovered.T
+data_death = data_death.T
 
-data_infected.rename(columns=data_infected.iloc[0], inplace = True)
-data_infected = data_infected.iloc[3:,:]
-data_recovered.rename(columns=data_recovered.iloc[0], inplace = True)
-data_recovered = data_recovered.iloc[3:,:]
-data_death.rename(columns=data_death.iloc[0], inplace = True)
-data_death = data_death.iloc[3:,:]
+kolone = np.r_[0, -60:0]
+data_infected.rename(columns=data_infected.iloc[1], inplace = True)
+data_infected = data_infected.iloc[kolone,:]
+data_recovered.rename(columns=data_recovered.iloc[1], inplace = True)
+data_recovered = data_recovered.iloc[kolone,:]
+data_death.rename(columns=data_death.iloc[1], inplace = True)
+data_death = data_death.iloc[kolone,:]
 
 country = 'Serbia'
 data_serbia_infected = data_infected[country]
@@ -39,22 +40,31 @@ gamma_tot_2 = gamma.mean()
 
 # pop_serbia = 6982604
 # pop_italy = 10078012
+# pop_china_hubeid = 58500000
 
 pop = 10078012
 
-country = 'Italy'
+country = 'China'
 
 
 lista = [('Infected',country),('Recovered',country),('Death',country)]
 df = data.loc[:,lista]
-df['S'] = df.loc[:,lista[0]]
+if country == 'China':
+    uslov = df.iloc[0,:] == 'Hubei'
+    vektor = np.where(uslov)
+    df = df.iloc[1:,vektor[0]]  
 
-df.iloc[0,3] = pop
+df['S'] = np.zeros(df.shape[0])
 
-for i in range(1,df.shape[0]):
-    df.iloc[i,3] = df.iloc[i-1,3] - df.iloc[i,0]
-    
 df = df[df.iloc[:,0]>0]
+df.iloc[:,0] = df.iloc[:,0] - df.iloc[:,1] - df.iloc[:,2]
+
+for i in range(0,df.shape[0]):
+        df.iloc[i,3] = pop - df.iloc[i,0] - df.iloc[i,1] - df.iloc[i,2]
+    
 df_t = df/pop
+
+name = "dataset/df_{}".format(country)
+np.save(name, df_t)
 
 

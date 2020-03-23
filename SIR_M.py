@@ -2,6 +2,15 @@ import scipy.integrate as spint
 import numpy as np 
 import matplotlib.pyplot as plt 
 
+
+def obj_function(var, t, beta, gamma, mort, S0, I0, R0, M0):
+    beta = var[0]
+    gamma = var[1]
+    mort = var[2]
+    
+    solution = spint.odeint(SIR_model, [S0, I0, R0, M0], t, args= (beta, gamma, mort))
+
+
 def SIR_model(y, t, beta, gamma, mort):
     S, I, R, M = y
     dS_dt = - beta*S*I
