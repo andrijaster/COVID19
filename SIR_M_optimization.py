@@ -14,6 +14,11 @@ def Obj_function(var, t, df, ind, prekid, I0, R0, M0, S0):
     obj_fun = np.sum((fun_rel - df)**2)
     return obj_fun
 
+def Obj_function_2(var, sol, domen_1, df):
+    fun_rel = model_new(var,sol, domen_1)
+    obj_fun = np.sum((fun_rel - df)**2)
+    return obj_fun
+
 def model_new(var, sol, domen_1):
     var_sum = 0
     model = 0
@@ -22,15 +27,7 @@ def model_new(var, sol, domen_1):
         var_sum += var[i]  
     fun_rel = model/var_sum
     return fun_rel
-    
-def Obj_function_2(var, sol, domen_1, df):
-    fun_rel = model_new(var,sol, domen_1)
-    obj_fun = np.sum((fun_rel - df)**2)
-    return obj_fun
         
-    
-
-
 def SIR_model(y, t, beta, gamma, mort, prekid):
     if t > prekid:
         beta = beta[1]
@@ -46,10 +43,14 @@ def SIR_model(y, t, beta, gamma, mort, prekid):
 
 if __name__ == "__main__":
     opt = 'meta'
-    fit = 0
+    fit = 0 # Nauci parametre kineske
+    fit_2 = 1 # Nauci tezine za svaku krivu 
+    dani = 70 # broj dana od 0 kada se vrsi fitovanje ili predvidjanje
+    domen = np.arange(14,31) # redni broj dana od kada deluje karantin
+
     country = 'China'
-    # pop = 6982604 #Serbia
     pop = 58500000
+    
     name = "dataset/df_{}.npy".format(country)
     df = np.load(name, allow_pickle = True)
     df = df[:,:]
@@ -59,12 +60,11 @@ if __name__ == "__main__":
     M0 = df[0,2]
     S0 = df[0,3]
     
-    t = np.linspace(0,70,701)
+    t = np.linspace(0,dani,dani*10+1) 
     time = np.arange(0,df.shape[0])
     index = np.where(np.in1d(t, time))[0]
     bnd = ((0,5),)*4
-    domen = np.arange(14,31)
-    # domen = [-1]
+
     
     if fit == 1:
         for prekid in domen:
@@ -83,27 +83,42 @@ if __name__ == "__main__":
                 beta = res.x[0:2]
                 gamma = res.x[2]
                 mort = res.x[3]
-                
+                        
+    sol = []
+    domen_1 = np.arange(18,31)
+    for prekid in domen_1:
+        res = np.load('modeli/vektor_{}_{}.npy'.format(prekid,country))
+        beta = res[0:2]
+        gamma = res[2]
+        mort = res[3]
+        solution = spint.odeint(SIR_model, [I0, R0, M0, S0], t, args= (beta, gamma, mort, prekid))
+        sol.append(np.array(solution))
+            
+        plt.figure(figsize = [10,6])
+        plt.plot(t, solution[:,0]*pop, label = "I(t)")
+        plt.plot(t, solution[:,1]*pop, label = "R(t)")
+        plt.plot(t, solution[:,2]*pop, label = "M(t)")
         
-
+        plt.plot(time, df[:,0]*pop,'o', label = "real I(t)")
+        plt.plot(time, df[:,1]*pop,'o',label = "real R(t)")
+        plt.plot(time, df[:,2]*pop,'o', label = "real M(t)")
         
-sol = []
-domen_1 = np.arange(18,31)
-for prekid in domen_1:
-    res = np.load('modeli/vektor_{}_{}.npy'.format(prekid,country))
-    beta = res[0:2]
-    gamma = res[2]
-    mort = res[3]
-    solution = spint.odeint(SIR_model, [I0, R0, M0, S0], t, args= (beta, gamma, mort, prekid))
-    sol.append(np.array(solution))
+        plt.grid()
+        plt.legend()
+        plt.xlabel("Vreme")
+        plt.ylabel("Broj_stanovnika")
+        plt.show()
         
+        plt.savefig('images/slika_{}_{}.png'.format(prekid,country))
+        
+        
+        
+    solution = np.mean(sol,axis = 0)
     plt.figure(figsize = [10,6])
-    # plt.plot(t, solution[:,3], label = "S(t)")
     plt.plot(t, solution[:,0]*pop, label = "I(t)")
     plt.plot(t, solution[:,1]*pop, label = "R(t)")
     plt.plot(t, solution[:,2]*pop, label = "M(t)")
     
-    # plt.plot(time, df[:,3],'o', label = "real S(t)")
     plt.plot(time, df[:,0]*pop,'o', label = "real I(t)")
     plt.plot(time, df[:,1]*pop,'o',label = "real R(t)")
     plt.plot(time, df[:,2]*pop,'o', label = "real M(t)")
@@ -111,64 +126,45 @@ for prekid in domen_1:
     plt.grid()
     plt.legend()
     plt.xlabel("Vreme")
-    plt.ylabel("Broj_stanovnika")
+    plt.ylabel("Udeli")
     plt.show()
     
-    plt.savefig('images/slika_{}_{}.png'.format(prekid,country))
+    plt.savefig('images/slika_{}_{}.png'.format('mean',country))
     
+    if fit_2 == 1:
+        res = []
+        for i in range(len(domen_1)):
+            res.append(sol[i][index])
+        
+        bounds =  bnd = ((0,10),)*len(domen_1)
+        res_2 = optimize.differential_evolution(Obj_function_2, bounds = bnd, maxiter = 300, popsize = 1000,
+                                            args = (res, domen_1, df), disp = True, tol = 0.0000001)
+        np.save('modeli/tezine', res_2.x)
+
+
+    var = np.load('modeli/tezine.npy')
     
+    solution = model_new(var, sol, domen_1)
     
-solution = np.mean(sol,axis = 0)
-plt.figure(figsize = [10,6])
-# plt.plot(t, solution[:,3], label = "S(t)")
-plt.plot(t, solution[:,0]*pop, label = "I(t)")
-plt.plot(t, solution[:,1]*pop, label = "R(t)")
-plt.plot(t, solution[:,2]*pop, label = "M(t)")
-
-# plt.plot(time, df[:,3],'o', label = "real S(t)")
-plt.plot(time, df[:,0]*pop,'o', label = "real I(t)")
-plt.plot(time, df[:,1]*pop,'o',label = "real R(t)")
-plt.plot(time, df[:,2]*pop,'o', label = "real M(t)")
-
-plt.grid()
-plt.legend()
-plt.xlabel("Vreme")
-plt.ylabel("Udeli")
-plt.show()
-
-plt.savefig('images/slika_{}_{}.png'.format('mean',country))
-
-res = []
-for i in range(len(domen_1)):
-    res.append(sol[i][index])
-
-bounds =  bnd = ((0,10),)*len(domen_1)
-# res_2 = optimize.differential_evolution(Obj_function_2, bounds = bnd, maxiter = 300, popsize = 1000,
-                                    # args = (res, domen_1, df), disp = True, tol = 0.0000001)
-# var = res_2.x
-var = np.load('modeli/tezine.npy')
-# np.save('modeli/tezine', res_2.x)
-solution = model_new(var, sol, domen_1)
-
-solution = np.mean(sol,axis = 0)
-plt.figure(figsize = [10,6])
-# plt.plot(t, solution[:,3], label = "S(t)")
-plt.plot(t, solution[:,0]*pop, label = "I(t)")
-plt.plot(t, solution[:,1]*pop, label = "R(t)")
-plt.plot(t, solution[:,2]*pop, label = "M(t)")
-
-# plt.plot(time, df[:,3],'o', label = "real S(t)")
-plt.plot(time, df[:,0]*pop,'o', label = "real I(t)")
-plt.plot(time, df[:,1]*pop,'o',label = "real R(t)")
-plt.plot(time, df[:,2]*pop,'o', label = "real M(t)")
-
-plt.grid()
-plt.legend()
-plt.xlabel("Vreme")
-plt.ylabel("Udeli")
-plt.show()
-
-plt.savefig('images/slika_{}_{}.png'.format('mean_w',country))
+    solution = np.mean(sol,axis = 0)
+    plt.figure(figsize = [10,6])
+    plt.plot(t, solution[:,0]*pop, label = "I(t)")
+    plt.plot(t, solution[:,1]*pop, label = "R(t)")
+    plt.plot(t, solution[:,2]*pop, label = "M(t)")
+    
+    plt.plot(time, df[:,0]*pop,'o', label = "real I(t)")
+    plt.plot(time, df[:,1]*pop,'o',label = "real R(t)")
+    plt.plot(time, df[:,2]*pop,'o', label = "real M(t)")
+    
+    plt.grid()
+    plt.legend()
+    plt.xlabel("Vreme")
+    plt.ylabel("Udeli")
+    plt.show()
+    
+    plt.savefig('images/slika_{}_{}.png'.format('mean_w',country))
+    
+    np.arange('2020-03-06', '2020-03', dtype='datetime64[D]')
 
 
 
