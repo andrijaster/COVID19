@@ -23,8 +23,9 @@ data_serbia_recovered = data_recovered[country]
 data_serbia_death = data_death[country]
 
 
+
 d = {'Infected' : data_infected, 'Recovered' : data_recovered, 'Death': data_death}
-df = [data_infected, data_recovered, data_death]
+
 data = pd.concat(d.values(), axis=1, keys=d.keys())
 
 mort = data_death.sum(axis=1)/data_infected.sum(axis=1)
@@ -40,9 +41,9 @@ gamma_tot_2 = gamma.mean()
 
 # pop_serbia = 6982604
 # pop_italy = 10078012
-# pop_china_hubeid = 58500000
+pop_china_hubeid = 58500000
 
-pop = 10078012
+pop = 6982604
 
 country = 'Serbia'
 
@@ -65,6 +66,6 @@ for i in range(0,df.shape[0]):
 df_t = df/pop
 
 name = "dataset/df_{}".format(country)
-np.save(name, df_t)
+np.save(name, df_t.iloc[:,:])
 
 
