@@ -39,6 +39,33 @@ kolone = ["MEASURE","TARGETED_POP_GROUP","SOURCE_TYPE"]
 intr.drop(kolone, axis = 1, inplace = True)
 intr = intr.dropna()
 
+# ----- DODATO -----
+intr_2 = intervention.copy()
+dates_of_interventions = intervention.groupby('COUNTRY').apply(lambda x: x['DATE_IMPLEMENTED']).reset_index()
+
+value_vars = data_infected.columns[4:]
+first_occ = []
+for c in dates_of_interventions['COUNTRY'].unique():
+
+    i = data_infected.loc[data_infected['Country/Region'] == c, value_vars]
+    i = i.sum()
+    inx = np.min(np.where(i > 0))
+    first_occ.append([c, data_infected.columns[inx + 4]])
+
+first_occ = pd.DataFrame(first_occ, columns=['COUNTRY', 'DATE_FIRST'])
+dates_of_interventions = dates_of_interventions.merge(first_occ, on='COUNTRY')
+dates_of_interventions['DATE_FIRST'] = pd.to_datetime(dates_of_interventions['DATE_FIRST'])
+dates_of_interventions['DAYS_FROM_FIRST'] = (dates_of_interventions['DATE_IMPLEMENTED'] - dates_of_interventions['DATE_FIRST'])/np.timedelta64(1, 'D')
+
+# AKO SU MERE DODATE PRE PRVOG POJAVLJIVANJA STAVITI NULA
+dates_of_interventions.loc[dates_of_interventions['DAYS_FROM_FIRST'] < 0, 'DAYS_FROM_FIRST'] = 0
+
+intr_2['DAYS_FROM_FIRST'] = dates_of_interventions['DAYS_FROM_FIRST'].values
+pivot_interventions = intr_2.groupby(['COUNTRY', 'MEASURE'])['DAYS_FROM_FIRST'].min().reset_index()
+pivot_interventions = pivot_interventions.pivot(index='COUNTRY', columns='MEASURE', values='DAYS_FROM_FIRST').fillna(0)
+
+# ----- END DODATO -----
+
 list_intervention = []
 for i in intr['COUNTRY'].unique():
     intr_1 = intr[intr['COUNTRY']==i]
@@ -149,6 +176,9 @@ with open('dataset/podaci_SIR.pkl', 'wb') as f2:
 
 with open('dataset/podaci_INTERVENTION.pkl', 'wb') as f3:
     pickle.dump(list_intervention, f3)
+    
+with open('dataset/podaci_INTERVENTION_DATES.pkl', 'wb') as f4:
+    pickle.dump(pivot_interventions, f4)
 
 
 scale = preprocessing.StandardScaler()
