@@ -121,14 +121,18 @@ for i in country:
     df_rec_new = pd.to_datetime(df_rec_new.iloc[:,0])
 
     intr_1 = list_intervention[k]
-    intr_1['DATE_IMPLEMENTED'] = intr_1['DATE_IMPLEMENTED'] + timedelta(days=5)
+    intr_1['DATE_IMPLEMENTED'] = intr_1['DATE_IMPLEMENTED']
     intr_1 = intr_1[intr_1['DATE_IMPLEMENTED']<df_rec_new.iloc[-1]]
-    intr_1 = intr_1[intr_1['DATE_IMPLEMENTED']>df_rec_new.iloc[0]]
+    #intr_1 = intr_1[intr_1['DATE_IMPLEMENTED']>df_rec_new.iloc[0]]
     
 
     
     for j in range(intr_1.shape[0]):
-        intr_1.iloc[j,1] = df_rec_new[df_rec_new==intr_1.iloc[j,1]].index
+        mesto = df_rec_new == intr_1.iloc[j,1]
+        if mesto.any():
+            intr_1.iloc[j,1] = df_rec_new[mesto].index
+        else: 
+            intr_1.iloc[j,1] = 0
 
     intr_1 = intr_1.drop_duplicates(subset=["DATE_IMPLEMENTED"], keep = "last")
 

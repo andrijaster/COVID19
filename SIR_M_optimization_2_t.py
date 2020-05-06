@@ -34,6 +34,7 @@ def Obj_function(var, country_atribute, list_SIRM, list_inter):
         gama_param = var[country_atribute.shape[1]:2*country_atribute.shape[1]]
         mort_param = var[2*country_atribute.shape[1]:3*country_atribute.shape[1]]
         inter_param = var[3*country_atribute.shape[1]:-5]
+        
         intercept_beta = var[-5]
         intercept_gamma = var[-4]
         intercept_mort = var[-3]

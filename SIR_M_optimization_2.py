@@ -14,8 +14,7 @@ def find_nearest(array, value):
         near = idx-1
     return near
 
-def Obj_function(var, country_atribute, list_SIRM, list_inter):
-
+def Obj_function(var, country_atribute, list_SIRM, list_inter, inter_dates):
     obj_fun = 0
     for i in range(country_atribute.shape[0]):
         y = list_SIRM[i].values
@@ -44,16 +43,16 @@ def Obj_function(var, country_atribute, list_SIRM, list_inter):
 
 
         solution = spint.odeint(SIRM_model, [S0, I0, R0, M0], t, 
-                    args = (country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept_beta,))
+                    args = (country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept_beta, inter_dates[i,:]))
         solution = np.array(solution)
         obj_fun += np.sum((solution[index,:] - y)**2)
     return obj_fun
 
         
-def SIRM_model(y, t, country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept):
-    if t > date_inter[0]:
+def SIRM_model(y, t, country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept, inter_dates):
+    if t >= date_inter[0]:
         idx = find_nearest(date_inter,t)
-        beta = np.exp(country_beta + inter_feature[idx,:].dot(inter_param) + intercept)
+        beta = np.exp(country_beta + (inter_feature[idx,:]*(t-inter_dates)).dot(inter_param) + intercept)
     else:
         beta = np.exp(country_beta + intercept)
     S, I, R, M = y
@@ -79,6 +78,11 @@ if __name__ == "__main__":
     with open('dataset/podaci_INTERVENTION.pkl', 'rb') as f2:
         list_inter = pickle.load(f2)   
 
+    with open('dataset/podaci_INTERVENTION_DATES.pkl', 'rb') as f3:
+        inter_dates = pickle.load(f3)   
+    
+    inter_dates = inter_dates.values
+
     country_atribute = pd.read_csv("dataset/country_atribute.csv", index_col=0)
     
     
@@ -89,16 +93,16 @@ if __name__ == "__main__":
     if fit == 1:
         if opt == 'meta':
             res = optimize.differential_evolution(Obj_function, bounds = bnd, maxiter = iter_max, popsize = pop_size, 
-            args = (country_atribute, list_SIRM, list_inter,), disp = True, tol = 0.00001)
+                                                    args = (country_atribute, list_SIRM, list_inter, inter_dates), disp = True, tol = 0.00001)
             np.save("modeli/vektor_{}_{}_{}_{}".format(iter_max, pop_size, opt, name),res.x)
         elif opt == 'neld':
             x0 = np.zeros(len(bnd))
-            res = optimize.minimize(Obj_function, x0,  args = (country_atribute, list_SIRM, list_inter,),
+            res = optimize.minimize(Obj_function, x0,  args = (country_atribute, list_SIRM, list_inter, inter_dates),
                                                     method = 'Nelder-Mead', options={'maxiter': iter_max})
             np.save("modeli/vektor_{}_{}_{}_{}".format(iter_max, pop_size, opt, name),res.x)
         elif opt == "CG":
             x0 = np.zeros(len(bnd))
-            res = optimize.minimize(Obj_function, x0,  args = (country_atribute, list_SIRM, list_inter,),
+            res = optimize.minimize(Obj_function, x0,  args = (country_atribute, list_SIRM, list_inter, inter_dates),
                                                     method = 'CG', options={'maxiter': iter_max})
             np.save("modeli/vektor_{}_{}_{}_{}".format(iter_max, pop_size, opt, name),res.x)
 
