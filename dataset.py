@@ -7,7 +7,7 @@ provincija = 'Hubei' # Upisati provinciju za Kinu
 data_infected = pd.read_csv("data/time_series_covid19_confirmed_global.csv")
 data_recovered = pd.read_csv("data/time_series_covid19_recovered_global.csv")
 data_death = pd.read_csv("data/time_series_covid19_deaths_global.csv")
-
+        
 data_infected = data_infected.T
 data_recovered = data_recovered.T
 data_death = data_death.T
