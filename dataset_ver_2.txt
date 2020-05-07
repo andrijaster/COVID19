@@ -74,7 +74,7 @@ list_intervention = []
 for i in intr['COUNTRY'].unique():
     intr_1 = intr[intr['COUNTRY']==i]
     intr_1 = intr_1.sort_values(by='DATE_IMPLEMENTED')
-    medju = intr[intr['COUNTRY']==i].iloc[:,2:].cumsum().values
+    medju = intr_1[intr_1['COUNTRY']==i].iloc[:,2:].cumsum().values
     medju[medju>1] = 1
     intr_1.iloc[:,2:] = medju
     kolone = intr_1.columns[2:]
@@ -127,7 +127,6 @@ for i in country:
     intr_1 = list_intervention[k]
     intr_1['DATE_IMPLEMENTED'] = intr_1['DATE_IMPLEMENTED']
     intr_1 = intr_1[intr_1['DATE_IMPLEMENTED']<df_rec_new.iloc[-1]]
-    #intr_1 = intr_1[intr_1['DATE_IMPLEMENTED']>df_rec_new.iloc[0]]
     
 
     
@@ -138,6 +137,10 @@ for i in country:
         else: 
             intr_1.iloc[j,1] = 0
 
+    intr_1.loc[-1] = 0
+    intr_1.index = intr_1.index + 1
+    intr_1.sort_index(inplace=True)
+    intr_1.iloc[0,0] = intr_1.iloc[1,0]
     intr_1 = intr_1.drop_duplicates(subset=["DATE_IMPLEMENTED"], keep = "last")
 
     list_intervention[k] = intr_1
