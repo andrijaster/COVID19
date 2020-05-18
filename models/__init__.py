@@ -1,0 +1,2 @@
+from models.SIRM_deterministic import SIRM_deterministic
+from models.SIRM_deterministic_T2 import SIRM_deterministic_T2
