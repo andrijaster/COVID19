@@ -1,4 +1,4 @@
-Country Name,Diabetes prevalence (% of population ages 20 to 79),"Labor force, female (% of total labor force)","Labor force, total",Poverty headcount ratio at national poverty line (% of population),"School enrollment, primary (% gross)","School enrollment, primary (% net)","School enrollment, primary, female (% gross)","School enrollment, primary, female (% net)","School enrollment, primary, male (% gross)","School enrollment, primary, male (% net)","School enrollment, secondary (% gross)","School enrollment, secondary, female (% gross)","School enrollment, secondary, male (% gross)","Unemployment, female (% of female labor force)","Unemployment, male (% of male labor force)","Unemployment, total (% of total labor force)"
+﻿Country Name,Diabetes prevalence (% of population ages 20 to 79),"Labor force, female (% of total labor force)","Labor force, total",Poverty headcount ratio at national poverty line (% of population),"School enrollment, primary (% gross)","School enrollment, primary (% net)","School enrollment, primary, female (% gross)","School enrollment, primary, female (% net)","School enrollment, primary, male (% gross)","School enrollment, primary, male (% net)","School enrollment, secondary (% gross)","School enrollment, secondary, female (% gross)","School enrollment, secondary, male (% gross)","Unemployment, female (% of female labor force)","Unemployment, male (% of male labor force)","Unemployment, total (% of total labor force)"
 Afghanistan,9.2,35.92458497529174,14450224.0,,,,,,,,,,,2.38499999046326,1.03699994087219,1.51900005340576
 Albania,9.0,41.65963894763148,1324517.0,,,,,,,,,,,13.331000328064,14.4090003967285,13.956000328064
 Algeria,6.7,18.00328610561248,12316707.0,,,,,,,,,,,21.1019992828369,10.4270000457764,12.3489999771118
@@ -103,7 +103,7 @@ Hungary,6.9,45.71397673542109,4669760.0,,,,,,,,,,,3.75500011444092,3.21900010108
 Iceland,5.8,47.23491174075659,217371.0,,,,,,,,,,,2.9300000667572,2.96799993515015,2.95000004768372
 India,10.4,21.790881428009087,519469299.0,,,,,,,,,,,3.56900000572205,2.26500010490417,2.55100011825562
 Indonesia,6.3,38.95233453136734,133950010.0,,,,,,,,,,,4.23699998855591,4.46299982070923,4.375
-"Iran, Islamic Rep.",9.6,18.80977903165786,27358987.0,,,,,,,,,,,20.1280002593994,10.0979995727539,11.9919996261597
+Iran,9.6,18.80977903165786,27358987.0,,,,,,,,,,,20.1280002593994,10.0979995727539,11.9919996261597
 Iraq,8.8,14.577431954303563,10378577.0,,,,,,,,,,,12.3819999694824,7.14099979400635,7.90500020980835
 Ireland,3.2,45.621314049064424,2357431.0,,,,,,,,,,,5.07000017166138,5.46299982070923,5.28399991989136
 Israel,9.7,47.06837816280836,4162440.0,,,,,,,,,,,3.94899988174438,3.91499996185303,3.93099999427795

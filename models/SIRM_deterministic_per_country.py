@@ -229,7 +229,7 @@ if __name__=="__main__":
                 
         objekat = SIRM_deterministic(name = list_inter_x.iloc[0,0])
         # print(k,objekat.name)
-        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=100,pop_size=150)
+        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=150,pop_size=150)
         objekat.predict(list_SIRM_test_x, list_inter_x, inter_dates_x, CA)
         objekat.evaluate()
         objekat.plot(i, pop)

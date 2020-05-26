@@ -18,11 +18,11 @@ population = pd.read_excel("data/Population.xlsx")
 country_atribute = hel_nut_pop
 
 country = ["China", "Italy", "Spain", "Germany", "Iran", "France", "Switzerland", 
-"UK", "Norway", "Serbia", "Greece", "Bulgaria", "Hungary", "Belgium", "Turkey", 
+"UK", "Norway", "Serbia", "Greece", "Hungary", "Belgium", "Turkey", 
 "Netherlands", "Portugal", "Sweden","Croatia", "Belarus", "Ireland"]
 
 country_2 = ["China", "Italy", "Spain", "Germany", "Iran", "France", "Switzerland", 
-"United Kingdom", "Norway", "Serbia", "Greece", "Bulgaria", "Hungary", "Belgium", "Turkey", 
+"United Kingdom", "Norway", "Serbia", "Greece", "Hungary", "Belgium", "Turkey", 
 "Netherlands", "Portugal", "Sweden","Croatia", "Belarus", "Ireland"]
 
 country_atribute = country_atribute.loc[country_atribute["Country Name"].isin(country)]
@@ -232,4 +232,8 @@ country_atribute = country_atribute.dropna(axis=1)
 x_scaled = scale.fit_transform(country_atribute.iloc[:,1:])
 country_atribute.iloc[:,1:] = x_scaled
 country_atribute.to_csv('dataset/country_atribute.csv')
+
+for i in range(20):
+    print(list_intervention[i].iloc[0,0], country_atribute.iloc[i,0])
+
         
