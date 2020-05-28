@@ -232,7 +232,7 @@ if __name__=="__main__":
         pop = population.iloc[i,1] 
                 
         objekat = SIRM_deterministic(name = list_inter_x.iloc[0,0])
-        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=200,pop_size=500)
+        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=220,pop_size=500)
         objekat.predict(list_SIRM_test_x, list_inter_x, inter_dates_x, CA)
         objekat.evaluate()
         objekat.plot(i, pop)
