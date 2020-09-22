@@ -75,7 +75,9 @@ class SIRM_deterministic_T2():
     @staticmethod 
     def SIRM_model(y, t, country_beta, gamma, mort, inter_param_t, inter_param_t2, inter_feature, date_inter, intercept, inter_dates):
         idx = SIRM_deterministic_T2.find_nearest(date_inter,t)
-        beta = np.abs(country_beta + (inter_feature[idx,:]*(t-inter_dates)).dot(inter_param_t) + (inter_feature[idx,:]*(t-inter_dates)**2).dot(inter_param_t2) + intercept)
+        beta = country_beta + (inter_feature[idx,:]*(t-inter_dates)).dot(inter_param_t) + (inter_feature[idx,:]*(t-inter_dates)**2).dot(inter_param_t2) + intercept
+        if beta < 0:
+            beta = 0
         S, I, R, M = y
         dS_dt = - beta*S*I
         dI_dt = beta*S*I - gamma*I - mort*I

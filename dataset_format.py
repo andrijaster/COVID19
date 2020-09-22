@@ -95,6 +95,7 @@ lista_SIRM_trening = []
 lista_SIRM_test = []
 lista_SIR = []
 
+
 country_atribute["Lat"] = np.zeros(country_atribute.shape[0])
 country_atribute["Long"] = np.zeros(country_atribute.shape[0])
 

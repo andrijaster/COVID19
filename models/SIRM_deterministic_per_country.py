@@ -15,7 +15,7 @@ import xlwt as xl
 #warnings.filterwarnings("ignore")
 
 
-class SIRM_deterministic():
+class SIRM_deterministic_per_country():
 
     def __init__(self, name = "det_T", no_countries = 20):
         self.name = name
@@ -56,7 +56,7 @@ class SIRM_deterministic():
         mort = np.abs(intercept_mort)
 
         if gamma <10 and mort<10:
-            solution = spint.odeint(SIRM_deterministic.SIRM_model, [S0, I0, R0, M0], t, 
+            solution = spint.odeint(SIRM_deterministic_per_country.SIRM_model, [S0, I0, R0, M0], t, 
                     args = (country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept_beta, inter_dates))
         else:
             solution = np.ones([t.shape[0],4])*100
@@ -65,8 +65,10 @@ class SIRM_deterministic():
 
     @staticmethod 
     def SIRM_model(y, t, country_beta, gamma, mort, inter_param, inter_feature, date_inter, intercept, inter_dates):
-        idx = SIRM_deterministic.find_nearest(date_inter,t)
-        beta = np.abs(country_beta + (inter_feature[idx,:]*(t-inter_dates)).dot(inter_param) + intercept)
+        idx = SIRM_deterministic_per_country.find_nearest(date_inter,t)
+        beta = country_beta + (inter_feature[idx,:]*(t-inter_dates)).dot(inter_param) + intercept
+        if beta<0:
+            beta = 0
         S, I, R, M = y
         dS_dt = - beta*S*I
         dI_dt = beta*S*I - gamma*I - mort*I
@@ -80,7 +82,7 @@ class SIRM_deterministic():
 
         def Obj_function(var, country_atribute, list_SIRM, list_inter, inter_dates):
             obj_fun = 0
-            _, solution_index_list, _ = SIRM_deterministic.solve(var, country_atribute,list_SIRM,list_inter, inter_dates)
+            _, solution_index_list, _ = SIRM_deterministic_per_country.solve(var, country_atribute,list_SIRM,list_inter, inter_dates)
             y = list_SIRM.values
             solution = solution_index_list
             obj_fun += np.sum((solution - y)**2)
@@ -107,9 +109,9 @@ class SIRM_deterministic():
 
     def predict(self, list_SIRM, list_inter, inter_dates, country_atribute):
 
-        self.solution_list, self.solution_index_list, self.list_SIRM = SIRM_deterministic.solve(self.res.x, country_atribute, list_SIRM, list_inter, inter_dates)
+        self.solution_list, self.solution_index_list, self.list_SIRM = SIRM_deterministic_per_country.solve(self.res.x, country_atribute, list_SIRM, list_inter, inter_dates)
 
-    def evaluate(self):
+    def evaluate(self, population):
 
         wb = xl.Workbook()
         ws1 = wb.add_sheet("R2")
@@ -144,7 +146,7 @@ class SIRM_deterministic():
 
         return self.res_R2, self.res_MSE
     
-    def plot(self, i, pop, no_countries = 20):
+    def plot(self, i, pop, population, no_countries = 20):
 
             
         y = self.list_SIRM
@@ -227,9 +229,9 @@ if __name__=="__main__":
         inter_dates_x =  inter_dates[i]
         pop = population.iloc[i,1] 
                 
-        objekat = SIRM_deterministic(name = list_inter_x.iloc[0,0])
+        objekat = SIRM_deterministic_per_country(name = list_inter_x.iloc[0,0])
         # print(k,objekat.name)
-        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=150,pop_size=150)
+        objekat.fit(CA, list_SIRM_train_x, list_inter_x, inter_dates_x, iter_max=220,pop_size=500)
         objekat.predict(list_SIRM_test_x, list_inter_x, inter_dates_x, CA)
         objekat.evaluate()
         objekat.plot(i, pop)
